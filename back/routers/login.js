@@ -21,18 +21,25 @@ router.post("/", async (req, res) => {
       error: "missing parameters: " + missingParameters.join(","),
     });
   }
+
   try {
     const pool = req.app.locals.dbPool;
-    const result = await pool
-      .request()
-      .input("username", sql.NVarChar, username)
-      .query(
-        "SELECT user_id,username,email,first_name,last_name,password,salt,login_attempts FROM Users WHERE username=@username"
-      );
+
+    const selectQuery =
+      "SELECT user_id,username,email,first_name,last_name,password,salt,login_attempts " +
+      "FROM Users WHERE username = '" +
+      username +
+      "'";
+    const result = await pool.request().query(selectQuery);
+
     if (result.recordset.length > 0) {
-      const { password, salt, user_id } = result.recordset[0];
-      const currLoginAttempts = result.recordset[0].login_attempts;
-      // Check if the user has exceeded the maximum login attempts
+      const {
+        password: storedHash,
+        salt,
+        user_id,
+        login_attempts: currLoginAttempts,
+      } = result.recordset[0];
+
       const policy = getPasswordPolicy();
       if (currLoginAttempts >= policy.maxLoginAttempts) {
         return res.status(403).json({
@@ -40,18 +47,18 @@ router.post("/", async (req, res) => {
           error_msg: "Maximum login attempts exceeded. Your user blocked.",
         });
       }
+
       const secretKey = process.env.SECRET_KEY;
       const inputHashed = hashPassword(inputPassword, salt, secretKey);
-      const isLogin = inputHashed === password;
+      const isLogin = inputHashed === storedHash;
+
       if (isLogin) {
-        // Reset login attempts on successful login
-        await pool
-          .request()
-          .input("user_id", sql.NVarChar, user_id)
-          .input("login_attempts", sql.Int, 0)
-          .query(
-            "UPDATE Users SET login_attempts=@login_attempts WHERE user_id=@user_id"
-          );
+        const resetQuery =
+          "UPDATE Users SET login_attempts = 0 WHERE user_id = '" +
+          user_id +
+          "'";
+        await pool.request().query(resetQuery);
+
         return res.status(200).json({
           success: true,
           user: {
@@ -63,22 +70,21 @@ router.post("/", async (req, res) => {
           },
         });
       } else {
-        // Increment login attempts
+        const newAttempts = currLoginAttempts + 1;
         console.log(
-          `Login attempt failed for user: ${username}. Current attempts: ${
-            currLoginAttempts + 1
-          }`
+          `Login attempt failed for user: ${username}. Current attempts: ${newAttempts}`
         );
 
-        await pool
-          .request()
-          .input("user_id", sql.NVarChar, user_id)
-          .input("login_attempts", sql.Int, currLoginAttempts + 1)
-          .query(
-            "UPDATE Users SET login_attempts=@login_attempts WHERE user_id=@user_id"
-          );
+        const incrementQuery =
+          "UPDATE Users SET login_attempts = " +
+          newAttempts +
+          " WHERE user_id = '" +
+          user_id +
+          "'";
+        await pool.request().query(incrementQuery);
       }
     }
+
     return res.status(401).json({
       success: false,
       error_msg: "username or password incorrect",
@@ -91,4 +97,5 @@ router.post("/", async (req, res) => {
     });
   }
 });
+
 module.exports = router;

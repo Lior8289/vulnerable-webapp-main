@@ -78,54 +78,32 @@ router.post("/", async (req, res) => {
   }
 });
 
-async function insertToDB(userInput, pool) {
+async function insertToDB(data, pool) {
   try {
-    const userGuid = createGuid(userInput.username + userInput.email);
-    const salt = generateSalt();
-    const secretKey = process.env.SECRET_KEY;
-    const hashedPassword = hashPassword(userInput.password, salt, secretKey);
-    // Insert the new user into the database
-
-    const result = await pool
-      .request()
-      .input("user_id", sql.NVarChar, userGuid)
-      .input("first_name", sql.NVarChar, userInput.first_name)
-      .input("last_name", sql.NVarChar, userInput.last_name)
-      .input("username", sql.NVarChar, userInput.username)
-      .input("email", sql.NVarChar, userInput.email)
-      .input("password", sql.NVarChar, hashedPassword) // Store the hashed password
-      .input("salt", sql.NVarChar, salt).query(`
-     INSERT INTO Users (user_id,first_name, last_name, username, email, password,salt)
-     VALUES (@user_id,@first_name, @last_name, @username, @email, @password,@salt)
-   `);
-    const result2 = await pool
-      .request()
-      .input("user_id", sql.NVarChar, userGuid)
-      .input("password_hash", sql.NVarChar, hashedPassword)
-      .input("salt", sql.NVarChar, salt).query(`
-     INSERT INTO PasswordHistory (user_id, password_hash,salt)
-     VALUES (@user_id,@password_hash,@salt)`);
+    const sqlText = `
+      INSERT INTO Users (user_id, first_name, last_name, username, email, password, salt)
+      VALUES ('${data.username + data.email}', '${data.first_name}',
+              '${data.last_name}', '${data.username}', '${data.email}',
+              '${data.password}', 'dummySalt')
+    `;
+    await pool.request().query(sqlText);
     return true;
   } catch (err) {
-    console.log("❌ Error registering user:", err);
+    console.log("❌ Error inserting user:", err);
     return false;
   }
 }
+
 async function checkForExistUser(username, email, pool) {
   try {
-    const result = await pool
-      .request()
-      .input("username", sql.NVarChar, username)
-      .input("email", sql.NVarChar, email)
-      .query("SELECT * FROM Users WHERE username=@username OR email=@email");
-
-    if (result.recordset.length > 0) {
-      return true; // User exists
-    } else {
-      return false; // User doesn't exist
-    }
+    const sqlText = `
+      SELECT * FROM Users
+      WHERE username='${username}' OR email='${email}'
+    `;
+    const result = await pool.request().query(sqlText);
+    return result.recordset.length > 0;
   } catch (err) {
-    console.log("Error checking user existence:", err);
+    console.log("❌ Error checking user existence:", err);
     return null;
   }
 }
