@@ -1,0 +1,232 @@
+/* Global Styles */
+:root {
+  --primary-color: #1976d2;
+  --primary-hover: #1565c0;
+  --background-color: #f8fafc;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --border-color: rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: var(--background-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* Layout */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-top: 64px; /* Height of navbar */
+  margin-bottom: 48px; /* Height of footer */
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Component Containers */
+.paper-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.4s ease-in-out;
+}
+
+.paper-container:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Form Elements */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Table Styles */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container th {
+  background: #f8f9fa;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: left;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-container td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Button Styles */
+.button-primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
+}
+
+.button-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.3);
+}
+
+/* Alert Styles */
+.alert {
+  padding: 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alert-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.alert-error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .main-content {
+    padding: 16px;
+  }
+
+  .paper-container {
+    padding: 24px;
+  }
+
+  .table-container {
+    margin: 0 -16px;
+    width: calc(100% + 32px);
+    border-radius: 0;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Logo Styles */
+.logo {
+  height: 80px;
+  margin: 0 auto 1rem;
+  padding: 1rem;
+  transition: transform 0.3s ease, filter 300ms;
+}
+.logo:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 1.5em rgba(100, 108, 255, 0.5));
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 1.5em rgba(97, 218, 251, 0.5));
+}
+
+/* Logo Spin Animation */
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .logo.spin {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Documentation Text */
+.read-the-docs {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Link Styles */
+a {
+  color: #1976d2;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+a:hover {
+  color: #115293;
+}
