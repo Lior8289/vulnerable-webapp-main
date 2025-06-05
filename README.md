@@ -129,9 +129,7 @@ secure-webapp/
 
 - **Password Policy**: Configurable password requirements (length, complexity, history)
 - **Dictionary Attack Prevention**: Blocks common weak passwords
-- **Input Validation**: Server-side validation for all inputs
 - **CORS Configuration**: Controlled cross-origin resource sharing
-- **Secure Headers**: Security headers implementation
 
 ## Development
 
